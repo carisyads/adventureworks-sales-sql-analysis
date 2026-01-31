@@ -1,0 +1,30 @@
+-- Purpose: Identify top  5 profitable products
+-- Database: postgresql	
+with ProfitableProduct as (
+select 
+	apl."ProductName" ,
+	apsl."SubcategoryName" ,
+	ROUND(
+			(SUM((t."OrderQuantity" * apl."ProductPrice")::numeric) 
+			- 
+			SUM((t."OrderQuantity" * apl."ProductCost")::numeric))
+			,2
+			) profit
+from 
+	"MySales"."fact_sales" t 
+left join 
+	"MySales"."adventureworks_product_lookup" apl on t."ProductKey" = apl."ProductKey"
+left join 
+	"MySales".adventureworks_product_subcategories_lookup apsl on apl."ProductSubcategoryKey" = apsl."ProductSubcategoryKey" 
+left join 
+	"MySales".adventureworks_product_categories_lookup apcl on apsl."ProductCategoryKey" = apcl."ProductCategoryKey" 
+group by
+	apl."ProductName" ,
+	apsl."SubcategoryName" 
+)
+select 
+	*
+from 
+	ProfitableProduct
+order by profit desc
+limit 5;
