@@ -1,0 +1,37 @@
+-- Purpose: to identify sales performance breakdown by territory
+-- Database: postgresql
+with territory_performance as (
+select 
+	atl."Country",
+	atl."Region" ,
+	ROUND(
+		SUM(
+			(t."OrderQuantity" * apl."ProductPrice")::numeric)
+			,2
+			) total_revenue,
+	ROUND(
+			(SUM((t."OrderQuantity" * apl."ProductPrice")::numeric) 
+			- 
+			SUM((t."OrderQuantity" * apl."ProductCost")::numeric))
+			,2
+			) profit
+from 
+	fact_sales t 
+left join 
+	"MySales"."adventureworks_product_lookup" apl on t."ProductKey" = apl."ProductKey" 
+left join 
+	"MySales".adventureworks_territory_lookup atl on atl."SalesTerritoryKey" = t."TerritoryKey" 
+group by 
+	atl."Country",
+	atl."Region" 
+)
+select
+	tp."Country" ,
+	tp."Region" ,
+	tp.total_revenue,
+	tp.profit,
+	ROUND((tp.profit/tp.total_revenue)*100,2) perc_profit_margin
+from 
+	territory_performance tp
+order by 
+	ROUND((tp.profit/tp.total_revenue)*100,2) desc
