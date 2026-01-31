@@ -1,0 +1,51 @@
+-- Purpose: to reveal customer behaviour that impact operational inefficiencies
+-- Database: postgresql
+with cust_metrics as (
+select 
+	acl."CustomerKey" ,
+	CONCAT(acl."FirstName", ' ', acl."LastName" ) customername,
+	COUNT(distinct t.orderkey) total_order,
+	ROUND(
+		SUM(
+			(t."OrderQuantity" * apl."ProductPrice")::numeric)
+			,2
+			) total_revenue,
+	ROUND(
+		(SUM(
+			(t."OrderQuantity" * apl."ProductPrice")::numeric)
+			/
+		COUNT(distinct t.orderkey))
+			,2
+			) AOV	
+from 
+	fact_sales t 
+left join 
+	"MySales"."adventureworks_product_lookup" apl on t."ProductKey" = apl."ProductKey"
+left join 
+	"MySales".adventureworks_customer_lookup acl  on t."CustomerKey" = acl."CustomerKey" 
+group by 
+	acl."CustomerKey" ,
+	CONCAT(acl."FirstName", ' ', acl."LastName" )
+)
+, ranked_cust as (
+select
+	cm.*,
+	NTILE(5) OVER (ORDER BY cm.total_order desc) AS order_bucket,
+	NTILE(5) OVER (ORDER BY cm.total_revenue  ASC) AS revenue_bucket
+from 
+	cust_metrics cm
+)
+select 
+	"CustomerKey" ,
+	customername ,
+	total_order,
+	total_revenue,
+	aov,
+	case when order_bucket = 1 then 1 else 0 end as is_high_frequency ,
+	case when revenue_bucket = 1 then 1 else 0 end as is_low_revenue
+from 
+	ranked_cust
+where 
+	case when order_bucket = 1 then 1 else 0 end = 1
+	and
+	case when revenue_bucket = 1 then 1 else 0 end = 1
