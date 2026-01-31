@@ -1,0 +1,37 @@
+-- Purpose: to identify MoM revenue growth
+-- Database: postgreSQL
+with productsales as (
+	select 
+	to_char(dd."calendardate", 'YYYY-mm') as MonthYear ,
+	ROUND(
+		SUM(
+			(t."OrderQuantity" * apl."ProductPrice")::numeric)
+			,2
+			) total_revenue
+from 
+	fact_sales t 
+left join 
+	"MySales"."DimDate" dd on t."DateKey" =dd."datekey"
+left join 
+	"MySales"."adventureworks_product_lookup" apl on t."ProductKey" = apl."ProductKey" 
+group by 
+	to_char(dd."calendardate", 'YYYY-mm')
+)
+, lagrevenue as (
+select 
+	ps.monthyear ,
+	LAG(ps.total_revenue ) over (order by ps.monthyear asc) prev_revenue,
+	ps.total_revenue current_revenue
+from 
+	productsales ps
+)
+select 
+	monthyear,
+	prev_revenue,
+	current_revenue,
+	round((current_revenue - prev_revenue),2) MoM_growth,
+	round(((current_revenue - prev_revenue) / nullif(prev_revenue ,0) )*100,2)  perc_MoM_growth
+from 
+	lagrevenue 
+order by 
+	monthyear
