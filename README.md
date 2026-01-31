@@ -20,7 +20,7 @@ This project uses SQL to analyze AdventureWorks sales data in order to evaluate 
 - High-frequency, low-revenue customer segmentation
 
 ## Data Limitations
-The AdventureWorks dataset does not include repeat customer behavior. Therefpore, customer analysis focuses on order efficiency rather than retention metrics.
+The AdventureWorks dataset does not include repeat customer behavior. Therefore, customer analysis focuses on order efficiency rather than retention metrics.
 
 ## Tools
 - PostgreSQL
