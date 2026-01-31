@@ -1,0 +1,41 @@
+-- Purpose: Identify top 5 products per category 
+-- Database: postgresql
+with productsales as (
+select 
+	apl."ModelName" ,
+	apsl."SubcategoryName" ,
+	apcl."CategoryName" ,
+	ROUND(
+		SUM(
+			(t."OrderQuantity" * apl."ProductPrice")::numeric)
+			,2
+			) total_revenue
+from 
+	"MySales"."fact_sales" t 
+left join 
+	"MySales"."adventureworks_product_lookup" apl on t."ProductKey" = apl."ProductKey"
+left join 
+	"MySales".adventureworks_product_subcategories_lookup apsl on apl."ProductSubcategoryKey" = apsl."ProductSubcategoryKey" 
+left join 
+	"MySales".adventureworks_product_categories_lookup apcl on apsl."ProductCategoryKey" = apcl."ProductCategoryKey" 
+group by
+	apl."ModelName" ,
+	apsl."SubcategoryName" ,
+	apcl."CategoryName"
+)
+, rank_product as (
+select 
+	ps."ModelName" ,
+	ps."SubcategoryName" ,
+	ps."CategoryName",
+	ps.total_revenue ,
+	DENSE_RANK() over (partition by ps."CategoryName" order by ps.total_revenue desc) rank_product
+from 
+	productsales ps
+)
+select 
+	*
+from 
+	rank_product 
+where 
+	rank_product <= 5
