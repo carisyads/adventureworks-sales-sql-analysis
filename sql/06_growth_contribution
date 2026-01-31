@@ -1,0 +1,54 @@
+-- Metrics: to identify growth contribution by category
+-- Database: postgresql
+with productsales as (
+select 
+	to_char(dd."calendardate", 'YYYY-mm') as MonthYear ,
+	apcl."CategoryName",
+	ROUND(
+		SUM(
+			(t."OrderQuantity" * apl."ProductPrice")::numeric)
+			,2
+			) total_revenue
+from 
+	fact_sales t 
+left join 
+	"MySales"."DimDate" dd on t."DateKey" =dd."datekey"
+left join 
+	"MySales"."adventureworks_product_lookup" apl on t."ProductKey" = apl."ProductKey"
+left join 
+	"MySales".adventureworks_product_subcategories_lookup apsl on apl."ProductSubcategoryKey" = apsl."ProductSubcategoryKey" 
+left join 
+	"MySales".adventureworks_product_categories_lookup apcl on apsl."ProductCategoryKey" = apcl."ProductCategoryKey" 
+group by 
+	to_char(dd."calendardate", 'YYYY-mm'),
+	apcl."CategoryName"
+)
+, growth_product as (
+select 
+	ps.monthyear ,
+	ps."CategoryName" ,
+	ps.total_revenue,
+	ps.total_revenue - (LAG(ps.total_revenue ) over (partition by ps."CategoryName" order by ps.monthyear asc)) MoM_growth
+from 
+	productsales ps
+)
+, growth_monthly as (
+select 
+	gp.monthyear ,
+	SUM(gp.mom_growth) as total_mom_growth
+from 
+	growth_product gp
+group by 
+	gp.monthyear 
+)
+select 
+	gp.monthyear,
+	gp."CategoryName" ,
+	gp.mom_growth ,
+	ROUND((gp.mom_growth / nullif(gm.total_mom_growth,0))*100,2) perc_contribution
+from 
+	growth_product gp 
+join 
+	growth_monthly gm on gp.monthyear = gm.monthyear 
+order by 
+	monthyear
