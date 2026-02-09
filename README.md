@@ -1,4 +1,5 @@
 # adventureworks-sales-sql-analysis
+This repository demonstrates an end-to-end sales analysis using AdventureWorks data, combining SQL-based data modeling with business-focused insights and Power BI visualizations.
 
 ## Overview
 This project uses SQL to analyze AdventureWorks sales data in order to evaluate overall business performance, identify key growth drivers, and uncover operational inefficiencies.
@@ -25,4 +26,5 @@ The AdventureWorks dataset does not include repeat customer behavior. Therefore,
 ## Tools
 - PostgreSQL
 - SQL (CTEs, window functions, aggregations)
+- Microsoft PowerBI
 
