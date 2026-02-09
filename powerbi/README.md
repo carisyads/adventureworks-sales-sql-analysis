@@ -21,6 +21,7 @@ This report is made to answer the following business questions:
   
 ## Key Insights
 ### 1. Revenue & Order Trend Dynamics
+![Revenue & Orders Trend](01_Revenue_and_Orders_Trend.png)
 Across 2020–2022, revenue and order trends mostly move in the same direction, indicating sustained demand growth. Periods where revenue and order volumes diverge suggest changes in Average Order Value (AOV), likely driven by shifts in pricing, product mix, or customer purchasing behavior.
 
 - **2020** performance was relatively volatile, with noticeable revenue–order divergence, reflecting AOV fluctuations and a gradual recovery toward year-end.
@@ -34,6 +35,7 @@ The most significant revenue and order peaks occurred in:
 These peaks indicate strong mid-year and year-end seasonality, likely influenced by promotional cycles or purchasing behavior patterns.
 
 ### 3. MoM Growth
+![MoM Growth](02_MoM_Growth.png)
 The most significant MoM revenue growth occured in:
 - **December 2020** (+72.61%)
 - **July 2021** (+93.83%)
@@ -41,7 +43,7 @@ These extensive growth indicate strong mid-year and year-end seasonality, likely
 Further validation of MoM growth drivers (order volume vs AOV, category-level contribution, and product concentration) can be performed using the existing monthly KPI and product-level queries in this project.
 
 ### 4. Top Profitable Products
-
+![Profitable Products](03_Profitable_Products.png)
 Profit analysis reveals that a small number of products contribute disproportionately to total profitability:
 
 - **Sport-100 Helmet, Blue** leads with **1.34M** in total profit, making it the most profitable product overall.
@@ -52,7 +54,7 @@ This pattern indicates that profitability is driven not only by high-priced item
 From a business perspective, these products represent strong candidates for continued promotion, inventory prioritization, and margin-protection strategies.
 
 ### 5. Product Performance by Category
-
+![Performance Products](04_Top_items_by_category.png)
 Revenue within each category is highly concentrated in a small number of top-performing products:
 
 - **Accessories**: Revenue is dominated by helmets and tires, with the *Sport-100 Helmet (Blue)* emerging as the top contributor, generating **1.57M** in revenue.
